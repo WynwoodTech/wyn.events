@@ -1,6 +1,4 @@
 Rails.application.routes.draw do
-
-  get 'events' => 'events#index'
-  post 'events' => 'events#create'
-
+  resources :events, only: [:index, :create]
+  root to: 'public#index'
 end
