@@ -21,6 +21,8 @@ class EventsController < ApplicationController
   expose(:organizer_url)   { params[:organizer][:website] }
   expose(:organizer_email) { params[:organizer][:email] }
 
+  protect_from_forgery with: :null_session
+
   def index
     render json: { events: Event.all }, status: 200
   end
@@ -28,8 +30,8 @@ class EventsController < ApplicationController
   def create
     success = false
     Organizer.find_or_create_by(payload[:organizer]).tap do | o |
-      venue = o.venues.find_or_create_by(payload[:venue])
-      o.events.find_or_initialize_by(payload[:event]).tap do | e |
+      venue = Venue.find_or_create_by(payload[:venue])
+      venue.events.find_or_initialize_by(payload[:event]).tap do | e |
         e.update( organizer_id: o.id, venue_id: venue.id)
         e.save!
         success = true
@@ -60,18 +62,18 @@ class EventsController < ApplicationController
       },
       venue: {
         name: venue_name,
-        email: email,
-        address_1: address_1,
-        address_2: address_2,
+        #email: venue_email,
+        address_one: address_1,
+        address_two: address_2,
         state: state,
         city: city,
         zip: zip
       },
       organizer: {
         name: organizer_name,
-        image: organizer_image,
+        email: organizer_email,
         website: organizer_url,
-        email: organizer_email
+        image_url: organizer_image
       }
     }
   end
