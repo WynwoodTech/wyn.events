@@ -4,7 +4,7 @@ class CreateOrganizers < ActiveRecord::Migration
       t.string :name
       t.string :image_url
       t.string :website
-      t.stirng :email
+      t.string :email
 
       t.timestamps null: false
     end
