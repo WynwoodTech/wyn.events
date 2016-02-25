@@ -23,6 +23,8 @@ class EventsController < ApplicationController
 
   protect_from_forgery with: :null_session
 
+  before_filter :fetch_event, except: [:index, :create]
+
   def index
     @events = Event.paginate(@pagination)
   end
@@ -45,7 +47,17 @@ class EventsController < ApplicationController
     end
   end
 
+  def show
+  end
+
   def update
+    begin
+      @event.update_attributes!(event_params)
+      render template: 'events/show'
+    rescue => e
+      Rails.logger.error e.message
+      render json: { error: { message: e.message, type: e.class.name } }, status: :unprocessable_entity
+    end
   end
 
   private
@@ -76,6 +88,14 @@ class EventsController < ApplicationController
         image_url: organizer_image
       }
     }
+  end
+
+  def fetch_event
+    @event =  Event.find(params[:id])
+  end
+
+  def event_params
+    params.require(:event).permit(:title, :description, :start_time, :end_time)
   end
 
 end

@@ -3,7 +3,15 @@ class ApplicationController < ActionController::Base
   # For APIs, you may want to use :null_session instead.
   protect_from_forgery with: :exception
 
+  rescue_from ActiveRecord::RecordNotFound , with: :rescue_record_not_found
+
   before_filter :set_pagination
+
+  protected
+
+  def rescue_record_not_found(exception)
+    render json: { error: { message: exception.message, type: exception.class.name } }, status: :not_found
+  end
 
   private
 
