@@ -24,7 +24,7 @@ class EventsController < ApplicationController
   protect_from_forgery with: :null_session
 
   def index
-    render json: { events: Event.all }, status: 200
+    @events = Event.paginate(@pagination)
   end
 
   def create
